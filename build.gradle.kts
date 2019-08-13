@@ -27,6 +27,10 @@ repositories {
         name = "bstats"
         url = uri("https://repo.codemc.org/repository/maven-public")
     }
+    maven {
+        name = "sk89q"
+        url = uri("https://maven.sk89q.com/repo/")
+    }
 }
 
 dependencies {
@@ -42,6 +46,7 @@ dependencies {
     val bstats = create(group = "org.bstats", name = "bstats-sponge-lite", version = "1.4")
     implementation(bstats)
     shadow(bstats)
+    implementation(group = "com.sk89q.worldedit", name = "worldedit-core", version = "7.0.0")
 }
 
 tasks.named<Jar>("jar") {

@@ -4,9 +4,10 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm") version "1.3.31"
     kotlin("kapt") version "1.3.31"
-    id("com.github.johnrengelman.shadow") version "5.0.0"
+    id("com.github.johnrengelman.shadow") version "4.0.4"
     id("flavor.pie.promptsign") version "1.1.0"
     id("maven-publish")
+    id("net.minecraftforge.gradle.forge") version "2.3-SNAPSHOT"
 }
 
 group = "flavor.pie"
@@ -43,23 +44,27 @@ dependencies {
     shadow(bstats)
 }
 
-tasks.named("jar") {
+tasks.named<Jar>("jar") {
     enabled = false
 }
 
 val shadowJar = tasks.named<ShadowJar>("shadowJar") {
-    configurations = listOf(project.configurations.shadow.get())
-    archiveClassifier.set("")
+    configurations = listOf(project.configurations.named("shadow").get())
+    classifier = ""
     relocate("kotlin", "flavor.pie.boxes.runtime.kotlin")
     relocate("flavor.pie.kludge", "flavor.pie.boxes.util.kludge")
     minimize()
 }
 
-tasks.build {
+tasks.named<Task>("build") {
     dependsOn(shadowJar)
 }
 
-tasks.named("signArchives") {
+tasks.named<Task>("signArchives") {
+    dependsOn(shadowJar)
+}
+
+tasks.named<Task>("reobfJar") {
     dependsOn(shadowJar)
 }
 
@@ -108,5 +113,10 @@ publishing {
             }
         }
     }
+}
+
+minecraft {
+    mappings = "stable_39"
+    version = "1.12.2-14.23.5.2838"
 }
 
